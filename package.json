@@ -1,0 +1,46 @@
+{
+  "name": "co-use",
+  "version": "0.0.0",
+  "description": "co using your choice of promise implementation",
+  "main": "./lib/",
+  "author": {
+    "name": "Overlook Motel"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/overlookmotel/co-use.git"
+  },
+  "bugs": {
+    "url": "https://github.com/overlookmotel/co-use/issues"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "mocha": "^2.3.2",
+    "chai": "^3.2.0",
+	"jshint": "^2.8.0",
+    "istanbul": "^0.3.19",
+    "coveralls": "^2.11.4"
+  },
+  "keywords": [
+    "co",
+    "use",
+    "promise",
+    "choice",
+    "bluebird"
+  ],
+  "scripts": {
+    "test": "make test",
+    "cover": "make cover"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "readmeFilename": "README.md",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/overlookmotel/co-use/raw/master/License"
+    }
+  ]
+}
