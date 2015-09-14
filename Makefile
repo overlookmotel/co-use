@@ -26,7 +26,7 @@ tests:
 	fi
 
 jshint:
-	./node_modules/.bin/jshint lib test
+	./node_modules/.bin/jshint bin src test
 
 cover:
 	make teaser; \
