@@ -3,6 +3,9 @@ TESTS = $(shell find ./test/* -name "*.test.js")
 
 # test commands
 
+build:
+	node ./bin/build.js
+
 teaser:
 	@echo "" && \
 	node -pe "Array(18).join('#')" && \
@@ -38,4 +41,4 @@ coveralls:
 	cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js; \
 	rm -rf ./coverage
 
-.PHONY: test tests cover coveralls
+.PHONY: build test tests cover coveralls

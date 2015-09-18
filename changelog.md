@@ -8,3 +8,4 @@
 
 * Tests run in harmony mode
 * co-use tests use generators
+* `npm run build` command
