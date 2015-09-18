@@ -57,6 +57,15 @@ npmLatest('co').then(function(package) {
     // save wrapped file
     return fs.writeFileAsync(pathModule.join(__dirname, '../lib/index.js'), txt);
 }).then(function() {
+    // read README
+    return fs.readFileAsync(pathModule.join(srcPath, 'README.md'), 'utf8');
+}).then(function(txt) {
+    // insert co version into README
+    txt = txt.replace(' --insert coVersion--', coVersion);
+
+    // write README
+    return fs.writeFileAsync(pathModule.join(__dirname, '../README.md'), txt);
+}).then(function() {
     // copy test files
     return Promise.all([
         fs.copyAsync(pathModule.join(srcPath, 'test/coUse.test.js'), pathModule.join(testPath, 'coUse.test.js')),

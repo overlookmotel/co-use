@@ -44,18 +44,17 @@ All other methods are the same as normal [co](https://www.npmjs.com/package/co).
 
 I requested that this functionality be included in `co` ([PR](https://github.com/tj/co/pull/226)) but so far it has not.
 
-So this module is made by loading `co` and wrapping the code to add the `.use()` method. I will endeavour to update this module when new versions of co are released. The version of `co` used is noted in a comment at the top of [./lib/index.js](https://github.com/overlookmotel/co-use/blob/master/lib/index.js)
+So this module is made by loading `co` and wrapping the code to add the `.use()` method. I will endeavour to update this module when new versions of co are released. The version of `co` currently used is `v --insert coVersion--`.
 
-If you wish to build `co-use` with a more recent version of `co`, do the following:
+If you wish to build `co-use` with the most recent version of `co`, do the following:
 
 1. Fork `co-use` from Github
-2. Update the version of co in `package.json` to the latest
-3. Go to the directory of the fork
-4. Run the following code:
+2. Go to the directory of the fork
+3. Run the following code:
 
 ```
-npm update  # loads latest version of co
-node ./bin/build.js
+npm install
+npm run build
 ```
 
 Please feel free to raise a PR with the updated build.
