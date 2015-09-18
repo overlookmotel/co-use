@@ -29,7 +29,7 @@ tests:
 	fi
 
 jshint:
-	./node_modules/.bin/jshint bin src test
+	./node_modules/.bin/jshint bin src
 
 cover:
 	make teaser; \

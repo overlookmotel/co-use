@@ -9,3 +9,4 @@
 * Tests run in harmony mode
 * co-use tests use generators
 * `npm run build` command
+* Do not run jshint on built tests
