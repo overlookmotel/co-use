@@ -4,7 +4,7 @@
 
 * Initial release
 
-## Next
+## 1.0.0
 
 * Tests run in harmony mode
 * co-use tests use generators
