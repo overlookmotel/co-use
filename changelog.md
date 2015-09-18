@@ -12,3 +12,4 @@
 * Do not run jshint on built tests
 * Build loads newest co and creates tests files for co tests
 * Build creates README.md
+* Build for co v4.6.0
