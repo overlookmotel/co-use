@@ -24,14 +24,14 @@ describe('co-use', function() {
 	});
 
 	it('without calling `.use()` returns native Promise', function() {
-		var promise = co(function() {});
+		var promise = co(function*() {}); // jshint ignore:line
 		expect(promise).to.be.instanceof(Promise);
 	});
 
 	it('when calling `.use()` returns provided Promise', function() {
 		var thisCo = co.use(Bluebird);
 
-		var promise = thisCo(function() {});
+		var promise = thisCo(function*() {}); // jshint ignore:line
 		expect(promise).to.be.instanceof(Bluebird);
 	});
 });

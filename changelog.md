@@ -7,3 +7,4 @@
 ## Next
 
 * Tests run in harmony mode
+* co-use tests use generators
