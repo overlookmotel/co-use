@@ -5,30 +5,97 @@
 
 // modules
 var pathModule = require('path'),
-    fs = require('fs');
+    childProcess = require('child_process'),
+    fs = require('fs-extra-promise'),
+    _ = require('lodash'),
+    Promise = require('bluebird'), // jshint ignore:line
+    npmApi = require('npm-web-api');
 
-// read co
-var coPath = require.resolve('co'),
-    coTxt = fs.readFileSync(coPath, 'utf8');
+// promisified functions
+var npmLatest = Promise.promisify(npmApi.getLatest),
+    childProcessExec = Promise.promisify(childProcess.exec);
 
-// read co version
-var coPackagePath = pathModule.join(coPath, '../package.json'),
-    coVersion = require(coPackagePath).version;
+//npmLatest = function() { return Promise.resolve({version:'4.6.0'}); }; //xxx remove this
 
-// read wrapper
-var wrapperPath = pathModule.join(__dirname, '../src/wrapper.js'),
-    wrapperTxt = fs.readFileSync(wrapperPath, 'utf8');
+var coVersion, coPath, srcPath, testPath;
 
-// insert coVersion and coTxt into wrapper
-wrapperTxt = wrapperTxt.replace('/* insert coVersion */', coVersion).replace('/* insert coTxt */', coTxt);
+// get latest release number of co
+npmLatest('co').then(function(package) {
+    coVersion = package.version;
+    console.log('co version:', coVersion);
 
-// save built file
-var buildFilePath = pathModule.join(__dirname, '../lib/index.js');
-fs.writeFileSync(buildFilePath, wrapperTxt);
+    // empty test directory
+    testPath = pathModule.join(__dirname, '../test');
+    return fs.emptyDirAsync(testPath);
+}).then(function() {
+    // download co
+    var cmd = 'cd ./test; curl -L https://api.github.com/repos/tj/co/tarball/' + coVersion + ' | tar xzf -';
+    return childProcessExec(cmd);
+}).then(function() {
+    // find folder just downloaded
+    return fs.readdirAsync(testPath);
+}).then(function(files) {
+    var filename = _.find(files, function(filename) {return filename.slice(0, 1) != '.';});
 
-// done
-console.log('Build complete');
+    // rename co folder
+    coPath = pathModule.join(testPath, 'native');
+    return fs.renameAsync(pathModule.join(testPath, filename), coPath);
+}).then(function() {
+    // duplicate co folder
+    return fs.copyAsync(coPath, pathModule.join(testPath, 'withUse'));
+}).then(function() {
+    // read co code + wrapper
+    srcPath = pathModule.join(__dirname, '../src');
+    return Promise.props({
+        co: fs.readFileAsync(pathModule.join(coPath, 'index.js'), 'utf8'),
+        wrapper: fs.readFileAsync(pathModule.join(srcPath, 'wrapper.js'), 'utf8')
+    });
+}).then(function(txts) {
+    // wrap co code in wrapper
+    var txt = txts.wrapper.replace('/* insert coVersion */', coVersion).replace('/* insert coTxt */', txts.co);
 
-//console.log('wrapperPath:', wrapperPath);
-//console.log('coPath:', coPath);
-//console.log('coTxt:', coTxt);
+    // save wrapped file
+    return fs.writeFileAsync(pathModule.join(__dirname, '../lib/index.js'), txt);
+}).then(function() {
+    // copy test files
+    return Promise.all([
+        fs.copyAsync(pathModule.join(srcPath, 'test/coUse.test.js'), pathModule.join(testPath, 'coUse.test.js')),
+        fs.copyAsync(pathModule.join(srcPath, 'test/native/index.js'), pathModule.join(testPath, 'native/index.js')),
+        fs.copyAsync(pathModule.join(srcPath, 'test/withUse/index.js'), pathModule.join(testPath, 'withUse/index.js'))
+    ]);
+}).then(function() {
+    // read co's tests
+    return fs.readdirAsync(pathModule.join(coPath, 'test'));
+}).then(function(files) {
+    var requireTxtNative = '', requireTxtWithUse = '';
+
+    return Promise.all(files.map(function(filename) {
+        if (filename.slice(-3) != '.js') return;
+
+        // add to testTxt
+        requireTxtNative += "require('./native/test/" + filename + "')\n";
+        requireTxtWithUse += "require('./withUse/test/" + filename + "')\n";
+
+        // read test file
+        return fs.readFileAsync(pathModule.join(coPath, 'test', filename), 'utf8')
+        .then(function(txt) {
+            // add Bluebird reference to withUse tests
+            txt = "var Promise = require('bluebird');\n" + txt;
+            return fs.writeFileAsync(pathModule.join(testPath, 'withUse/test', filename), txt);
+        });
+    }))
+    .then(function() {
+        return Promise.all([
+            fs.readFileAsync(pathModule.join(srcPath, 'test/native.test.js'), 'utf8').then(function(txt) {
+                txt = txt.replace('/* insert requires */', requireTxtNative);
+                return fs.writeFileAsync(pathModule.join(testPath, 'native.test.js'), txt);
+            }),
+            fs.readFileAsync(pathModule.join(srcPath, 'test/withUse.test.js'), 'utf8').then(function(txt) {
+                txt = txt.replace('/* insert requires */', requireTxtWithUse);
+                return fs.writeFileAsync(pathModule.join(testPath, 'withUse.test.js'), txt);
+            })
+        ]);
+    });
+}).then(function() {
+    console.log('Build complete');
+}).done();
