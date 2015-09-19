@@ -14,6 +14,6 @@
 * Build creates README.md
 * Build for co v4.6.0
 
-## Next
+## 1.0.1
 
 * Update package.json engine to node >=0.12.0
