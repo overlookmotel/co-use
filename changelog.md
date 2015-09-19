@@ -17,3 +17,7 @@
 ## 1.0.1
 
 * Update package.json engine to node >=0.12.0
+
+## Next
+
+* Do not throw error if no native Promise

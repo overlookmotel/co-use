@@ -3,7 +3,12 @@
 // current build based on co version /* insert coVersion */
 // --------------------
 
-module.exports = coUse(Promise);
+var P;
+try {
+    P = Promise;
+} catch (err) {}
+
+module.exports = coUse(P);
 
 // wrapper for co
 function coUse(Promise) { // jshint ignore:line
