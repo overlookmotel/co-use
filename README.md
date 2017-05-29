@@ -1,5 +1,7 @@
 # co-use.js
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/overlookmotel/co-use.svg)](https://greenkeeper.io/)
+
 # co using your choice of promise implementation
 
 ## Current status
